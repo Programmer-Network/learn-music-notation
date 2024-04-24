@@ -48,6 +48,7 @@ export class Note {
     if (frequency <= 0) {
       throw new Error('Frequency must be a positive number.');
     }
+
     const { name, accidentals, deviation } = determineClosestNoteDetails(frequency, tonality);
     const normalizedFrequency = normalizeFrequency(frequency);
     const octave = determineOctave(normalizedFrequency);
