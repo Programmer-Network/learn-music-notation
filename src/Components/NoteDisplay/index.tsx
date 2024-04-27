@@ -35,6 +35,7 @@ const NoteDisplay = () => {
         {
           scale: 4,
           expandToWidest: true,
+          staffwidth: 400,
         }
       );
 
@@ -70,7 +71,7 @@ const NoteDisplay = () => {
         </Button>
       )}
       {isStarted && (
-        <div className="space-y-5">
+        <div className="space-y-5 py-5">
           <div className="space-y-2 flex items-center justify-center flex-col w-full">
             <h2 className="text-slate-700 font-bold uppercase">
               Current Difficulty: {difficulty}
@@ -93,8 +94,9 @@ const NoteDisplay = () => {
         </div>
       )}
 
-      <div className=""></div>
-      <div ref={notationRef} className="text-white" />
+      <div className="bg-slate-700 rounded-lg">
+        <div ref={notationRef} className="text-white" />
+      </div>
     </div>
   );
 };
