@@ -1,7 +1,11 @@
 import NoteDisplay from "./Components/NoteDisplay";
 
 function App() {
-  return <NoteDisplay onChange={(note) => console.log(note)} />;
+  return (
+    <div className="dark:bg-slate-900 w-screen h-screen">
+      <NoteDisplay />
+    </div>
+  );
 }
 
 export default App;

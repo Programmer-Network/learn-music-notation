@@ -1,61 +1,93 @@
 import abcjs from "abcjs";
-import { FC, useEffect, useRef, useState } from "react";
+import classNames from "classnames";
+import { useEffect, useRef, useState } from "react";
 import { useAudioProcessor } from "../../Hooks/useAudioProcessor";
-import NoteUtils from "../../Utils/NoteUtils";
-import { notes } from "./constants";
+import NoteUtils, { notes } from "../../Utils/NoteUtils";
 
-/**
- * 1. How quickly should the notes change? Interval
- * 2. What notes should be displayed? Aiolan major scale, western scale, a user can choose later which scale they want to practice
- */
+import { INote } from "../../types";
+import Button from "../Button";
+import { IconSaxophone } from "../Icons/IconSaxophone";
+import "./style.css";
 
-const NoteDisplay: FC<{
-  onChange: (note: string) => void;
-}> = ({ onChange }) => {
-  const { playedNote, deviation, initAudio } = useAudioProcessor(notes);
+const NoteDisplay = () => {
+  const [isStarted, setIsStarted] = useState<boolean>(false);
+  const { playedNote, initAudio } = useAudioProcessor(notes);
 
-  const [randomNote, setRandomNote] = useState<string>("");
+  const [randomNote, setRandomNote] = useState<INote>({
+    frequency: 0,
+    abcNote: "",
+    note: "",
+    difficulty: "easy",
+  });
   const notationRef = useRef<HTMLDivElement>(null);
 
-  const changeNote = () => {
-    const random = NoteUtils.getRandomNote();
-    setRandomNote(random);
-    onChange(randomNote);
-
-    if (notationRef.current) {
-      const abcNotation = `X:1\nL:1/4\nK:C clef=treble\n${random}`;
-      abcjs.renderAbc(notationRef.current, abcNotation, {
-        responsive: "resize",
-        scale: 3,
-      });
-    }
-  };
-
   useEffect(() => {
+    const changeNote = () => {
+      const random = NoteUtils.getRandomNote("easy");
+      abcjs.renderAbc(
+        notationRef.current!,
+        NoteUtils.generateAbcNotation(random),
+        {
+          scale: 5,
+          expandToWidest: true,
+          paddingright: 0,
+          paddingbottom: 0,
+          paddingleft: 0,
+          paddingtop: 0,
+          minPadding: 0,
+          wrap: {
+            minSpacing: 0,
+            maxSpacing: 0,
+            preferredMeasuresPerLine: 1,
+          },
+        }
+      );
+
+      setRandomNote(random);
+    };
+
+    if (!isStarted || !notationRef.current) {
+      return;
+    }
+
     changeNote();
     const intervalId = setInterval(changeNote, 3000);
 
     return () => {
       clearInterval(intervalId);
     };
-  }, []);
+  }, [isStarted]);
+
+  const handleStart = () => {
+    initAudio();
+    setIsStarted(true);
+  };
 
   return (
-    <div className="p-12">
-      <button onClick={initAudio}>Start</button>
-      <h1>{playedNote.note}</h1>
-      <p>Frequency: {playedNote.frequency.toFixed(2)} Hz</p>
-      <div className="meter">
-        <div
-          className="meter-marker"
-          style={{ left: `calc(50% + ${deviation}%)` }}
-        ></div>
+    <div
+      className={classNames(
+        "flex flex-col items-center justify-center w-full h-full"
+      )}
+    >
+      {!isStarted && (
+        <Button onClick={handleStart}>
+          <IconSaxophone className="w-5" /> Practice
+        </Button>
+      )}
+
+      <div className="w-full flex items-center justify-center">
+        <div ref={notationRef} className="text-white" />
       </div>
 
-      <div ref={notationRef} className="text-center mt-4" />
-
-      <div>Played: {playedNote.note}</div>
-      <div>Random: {randomNote}</div>
+      {isStarted && (
+        <div className="text-center">
+          <h2 className="text-4xl text-yellow-500">{playedNote.note}</h2>
+          <h2 className="text-4xl text-yellow-500">{randomNote.note}</h2>
+          <h2 className="text-4xl text-yellow-500">
+            {playedNote.frequency.toFixed(2)}
+          </h2>
+        </div>
+      )}
     </div>
   );
 };
