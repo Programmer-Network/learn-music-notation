@@ -1,17 +1,10 @@
 .notation-container {
-  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Optional: Stellt sicher, dass das Container-Div die volle Höhe einnimmt */
 }
 
-.notation-container svg {
-  aspect-ratio: 2 / 1;
-  width: 100%;
+.notation-wrapper {
+  max-width: 100%; /* Optional: Begrenzt die Breite des Wrapper-Divs auf die Bildschirmbreite */
 }
-/* 
-.abcjs-notehead {
-  @apply text-yellow-500;
-}
-.abcjs-stem {
-  @apply text-yellow-500;
-}
-
- */
