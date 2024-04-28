@@ -1,7 +1,7 @@
 import { FC } from "react";
 
 const Button: FC<{
-  onClick: () => void;
+  onClick?: () => void;
   children: React.ReactNode;
 }> = ({ onClick, children }) => {
   return (
