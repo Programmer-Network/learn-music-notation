@@ -40,7 +40,7 @@ function App() {
             }
           />
         ) : (
-          <NoteDisplay isStarted={isStarted} />
+          <NoteDisplay isStarted={isStarted} setIsStarted={setIsStarted} />
         )}
       </div>
     </div>

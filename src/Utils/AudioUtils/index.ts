@@ -17,6 +17,12 @@ export class AudioUtils {
     return { audioContext, analyser };
   }
 
+  public static async stopAudio() {
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      stream.getTracks().forEach((track) => track.stop());
+    });
+  }
+
   /**
    * Find the closest note to a given frequency using an array of notes
    * @param frequency The frequency to find the closest note for
