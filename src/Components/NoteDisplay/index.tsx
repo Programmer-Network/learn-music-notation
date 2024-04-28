@@ -7,7 +7,6 @@ import NoteUtils, { notes } from "../../Utils/NoteUtils";
 import { INote } from "../../types";
 import Button from "../Button";
 import { IconSaxophone } from "../Icons/IconSaxophone";
-import "./style.css";
 import ListboxSelector from "../ListboxSelector";
 import { difficultyOptions } from "./types";
 
