@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useAudioProcessor } from "../../Hooks/useAudioProcessor";
 import NoteUtils, { notes } from "../../Utils/NoteUtils";
 
-import { INote } from "../../types";
+import { EDifficulty, INote } from "../../types";
 import Button from "../Button";
 import { IconSaxophone } from "../Icons/IconSaxophone";
 import ListboxSelector from "../ListboxSelector";
@@ -13,9 +13,7 @@ import { difficultyOptions } from "./types";
 const NoteDisplay = () => {
   const [isStarted, setIsStarted] = useState<boolean>(false);
   const { playedNote, initAudio } = useAudioProcessor(notes);
-  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">(
-    "easy"
-  );
+  const [difficulty, setDifficulty] = useState<EDifficulty>(EDifficulty.easy);
 
   const [randomNote, setRandomNote] = useState<INote>({
     frequency: 0,

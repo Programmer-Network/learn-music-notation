@@ -1,7 +1,3 @@
-export interface Props {
-  difficulty: "easy" | "medium" | "hard";
-}
-
 export const difficultyOptions = [
   {
     label: "Easy",

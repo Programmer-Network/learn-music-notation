@@ -1,4 +1,4 @@
-import { INote } from "../../types";
+import { EDifficulty, INote } from "../../types";
 
 export class AudioUtils {
   /**
@@ -88,6 +88,8 @@ export class AudioUtils {
         {
           note: note,
           frequency: noteFrequency,
+          abcNote: "",
+          difficulty: EDifficulty.easy,
         },
         freqDeviation
       );

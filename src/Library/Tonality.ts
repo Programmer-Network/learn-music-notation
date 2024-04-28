@@ -1,9 +1,13 @@
 import { FrequencyOfA4, NoteName, OctaveOfA4 } from "./Note";
-import { calculateFrequency, determineOctave, determineWrittenNoteOctave, getRandomElement } from "./utils";
+import {
+  calculateFrequency,
+  determineWrittenNoteOctave,
+  getRandomElement,
+} from "./utils";
 
 export enum TonalityType {
   Major = "major",
-  Minor = "minor"
+  Minor = "minor",
 }
 
 /**
@@ -26,24 +30,24 @@ export class Tonality {
     public readonly octave: number,
     public readonly type: TonalityType
   ) {
-    // Validate tonal center to be a valid note name  
+    // Validate tonal center to be a valid note name
     if (!Object.values(NoteName).includes(tonalCenter as NoteName)) {
-      throw new Error('Invalid tonal center: Must be a valid note name.');
+      throw new Error("Invalid tonal center: Must be a valid note name.");
     }
 
     // Validate frequency to be a positive number
     if (frequency <= 0) {
-      throw new Error('Frequency must be a positive number.');
+      throw new Error("Frequency must be a positive number.");
     }
 
     // Validate octave to be within a reasonable range
     if (octave < 0 || octave > 8) {
-      throw new Error('Octave must be between 0 and 8.');
+      throw new Error("Octave must be between 0 and 8.");
     }
 
     // Validate type to be either Major or Minor
     if (!Object.values(TonalityType).includes(type)) {
-      throw new Error('Invalid tonality type: Must be Major or Minor.');
+      throw new Error("Invalid tonality type: Must be Major or Minor.");
     }
   }
 
@@ -62,7 +66,7 @@ export class Tonality {
    * Parses a simplified string to create a Tonality object with dynamic frequency calculation.
    * Expected format: "Note[accidental][type]"
    * Example: "C#m" for C sharp minor
-   * 
+   *
    * @param written The string representation of the tonality.
    * @returns A new Tonality instance.
    */
@@ -71,18 +75,17 @@ export class Tonality {
     const match = written.match(regex);
 
     if (!match) {
-      throw new Error('Invalid tonality format.');
+      throw new Error("Invalid tonality format.");
     }
 
-    const [_, note, accidental, minorFlag] = match;
+    const [, note, accidental, minorFlag] = match;
     const type = minorFlag ? TonalityType.Minor : TonalityType.Major;
     const accidentals = accidental ? [accidental] : [];
 
     // Determine frequency based on note and accidental
-    const frequency =  calculateFrequency(note, accidental);
-    const octave =  determineWrittenNoteOctave(note, accidental);  
+    const frequency = calculateFrequency(note, accidental);
+    const octave = determineWrittenNoteOctave(note, accidental);
 
     return new Tonality(note, accidentals, frequency, octave, type);
   }
 }
-

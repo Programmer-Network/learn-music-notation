@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { AudioUtils } from "../../Utils/AudioUtils";
-import { AudioProcessorReturn, INote } from "../../types";
+import { AudioProcessorReturn, EDifficulty, INote } from "../../types";
 
 export const useAudioProcessor = (notes: INote[]): AudioProcessorReturn => {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
@@ -9,6 +9,8 @@ export const useAudioProcessor = (notes: INote[]): AudioProcessorReturn => {
   const [playedNote, setPlayedNote] = useState<INote>({
     note: "",
     frequency: 0,
+    abcNote: "",
+    difficulty: EDifficulty.easy,
   });
 
   const initAudio = useCallback(async () => {

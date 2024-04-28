@@ -1,7 +1,7 @@
 import { Listbox, Transition } from "@headlessui/react";
-import React, { Fragment } from "react";
-import { ListBoxProps } from "./types";
+import { Fragment } from "react";
 import IconChevronUpDown from "../Icons/IconChevronUpDown";
+import { ListBoxProps } from "./types";
 
 function ListboxSelector({
   value,

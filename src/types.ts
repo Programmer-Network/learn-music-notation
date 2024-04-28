@@ -1,8 +1,14 @@
+export enum EDifficulty {
+  easy = "easy",
+  medium = "medium",
+  hard = "hard",
+}
+
 export interface INote {
   note: string;
   abcNote: string;
   frequency: number;
-  difficulty: "easy" | "medium" | "hard";
+  difficulty: EDifficulty;
 }
 
 export interface AudioProcessorReturn {
