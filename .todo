@@ -4,7 +4,9 @@
 
 ☐ User Story @critical
     ✔ User clicks on Start @done(24-04-23 22:50)
-    ☐ abcjs draws the random note
+    ✔ abcjs draws the random note @done(24-04-27 23:18)
     ☐ User plays the note
-        ☐ Difficulty, modes, whatever
+    ☐ abcjs checks if the note is correct
+        ✔ Difficulty levels and dropdown @done(24-04-27 23:17)
+        ☐ modes, whatever
     ☐ Feedback is given to the user, based on if the note played is correct or not
