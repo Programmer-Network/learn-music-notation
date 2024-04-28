@@ -12,3 +12,7 @@ export const difficultyOptions = [
     value: "hard",
   },
 ];
+
+export interface Props {
+  isStarted: boolean;
+}
