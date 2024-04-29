@@ -15,4 +15,5 @@ export const difficultyOptions = [
 
 export interface Props {
   isStarted: boolean;
+  setIsStarted: (isStarted: boolean) => void;
 }

@@ -2,6 +2,7 @@ import { Listbox, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import IconChevronUpDown from "../Icons/IconChevronUpDown";
 import { ListBoxProps } from "./types";
+import IconCheckMark from "../Icons/IconCheckMark";
 
 function ListboxSelector({
   value,
@@ -28,7 +29,7 @@ function ListboxSelector({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-slate-800 py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
+          <Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-slate-800 py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
             {options.map((option, index) => (
               <Listbox.Option
                 key={index}
@@ -40,13 +41,20 @@ function ListboxSelector({
                 value={option.value}
               >
                 {({ selected }) => (
-                  <span
-                    className={`block truncate ${
-                      selected ? "font-medium" : "font-normal"
-                    }`}
-                  >
-                    {option.label}
-                  </span>
+                  <>
+                    <span
+                      className={`block truncate ${
+                        selected ? "font-medium" : "font-normal"
+                      }`}
+                    >
+                      {option.label}
+                    </span>
+                    {selected ? (
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-yellow-500">
+                        <IconCheckMark className="h-5 w-5" aria-hidden="true" />
+                      </span>
+                    ) : null}
+                  </>
                 )}
               </Listbox.Option>
             ))}

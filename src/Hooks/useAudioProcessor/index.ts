@@ -19,6 +19,12 @@ export const useAudioProcessor = (notes: INote[]): AudioProcessorReturn => {
     setAnalyser(analyser);
   }, []);
 
+  const stopAudio = useCallback(async () => {
+    await AudioUtils.stopAudio();
+    setAudioContext(null);
+    setAnalyser(null);
+  }, []);
+
   const onNoteDetected = useCallback((note: INote, freqDeviation: number) => {
     setPlayedNote(note);
     setDeviation(freqDeviation);
@@ -43,5 +49,6 @@ export const useAudioProcessor = (notes: INote[]): AudioProcessorReturn => {
     playedNote,
     deviation,
     initAudio,
+    stopAudio,
   };
 };

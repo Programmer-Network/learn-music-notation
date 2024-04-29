@@ -15,4 +15,5 @@ export interface AudioProcessorReturn {
   playedNote: INote;
   deviation: number;
   initAudio: () => void;
+  stopAudio: () => void;
 }
