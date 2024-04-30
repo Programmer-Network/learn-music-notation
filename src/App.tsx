@@ -3,11 +3,14 @@ import Button from "./Components/Button";
 import Modal from "./Components/Modal";
 import NoteDisplay from "./Components/NoteDisplay";
 import { IconSaxophone } from "./Components/Icons/IconSaxophone";
+import useSessionTracker from "./Hooks/useSessionTracker";
 
 function App() {
   const [isStarted, setIsStarted] = useState(false);
+  const { startSession, formatCountdown, isEnded } = useSessionTracker();
+
   return (
-    <div className="dark:bg-slate-900 min-h-screen">
+    <div className="dark:bg-primary min-h-screen">
       <div className="flex flex-col items-center justify-center h-screen w-full">
         {!isStarted ? (
           <Modal
@@ -33,6 +36,7 @@ function App() {
               <Button
                 onClick={() => {
                   setIsStarted(true);
+                  startSession();
                 }}
               >
                 Continue
@@ -40,7 +44,10 @@ function App() {
             }
           />
         ) : (
-          <NoteDisplay isStarted={isStarted} setIsStarted={setIsStarted} />
+          <>
+            <NoteDisplay isStarted={isStarted} setIsStarted={setIsStarted} />
+            <a> {isEnded ? "Beendet" : formatCountdown()}</a>
+          </>
         )}
       </div>
     </div>
