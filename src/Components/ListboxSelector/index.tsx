@@ -14,7 +14,7 @@ function ListboxSelector({
   return (
     <Listbox value={value} onChange={onChange}>
       <div className={`relative mt-1 ${className}`}>
-        <Listbox.Button className="relative capitalize w-full rounded-lg border-2 border-yellow-500 hover:border-yellow-600 cursor-pointer py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-yellow-700 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
+        <Listbox.Button className="relative capitalize w-full rounded-lg border-2 border-primary hover:border-yellow-400 cursor-pointer py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-yellow-700 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
           <span className="block truncate text-white">{buttonTitle}</span>
           <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
             <IconChevronUpDown
@@ -29,13 +29,13 @@ function ListboxSelector({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-slate-800 py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
+          <Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-muted py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
             {options.map((option, index) => (
               <Listbox.Option
                 key={index}
                 className={({ active }) =>
                   `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
-                    active ? "bg-slate-700 text-white" : "text-white"
+                    active ? "bg-mutedSecondary text-white" : "text-white"
                   }`
                 }
                 value={option.value}
@@ -50,7 +50,7 @@ function ListboxSelector({
                       {option.label}
                     </span>
                     {selected ? (
-                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-yellow-500">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-primary">
                         <IconCheckMark className="h-5 w-5" aria-hidden="true" />
                       </span>
                     ) : null}

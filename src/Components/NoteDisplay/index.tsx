@@ -7,19 +7,22 @@ import NoteUtils, { notes } from "../../Utils/NoteUtils";
 import { EDifficulty, INote } from "../../types";
 import ListboxSelector from "../ListboxSelector";
 import { Props, difficultyOptions } from "./types";
-import Button from "../Button";
 import IconMusikNote from "../Icons/IconMusikNote";
+import useSessionTracker from "../../Hooks/useSessionTracker";
+import IconDoorOpen from "../Icons/IconDoorOpen";
 
 const NoteDisplay = ({ isStarted, setIsStarted }: Props) => {
   const { playedNote, initAudio, stopAudio } = useAudioProcessor(notes);
-  const [difficulty, setDifficulty] = useState<EDifficulty>(EDifficulty.easy);
   const [isNoteCorrect, setIsNoteCorrect] = useState<boolean>(false);
+  const { addMissedNote, addSuccessfulNote } = useSessionTracker();
+  const { metrics, changeDifficulty, formatCountdown, endSession } =
+    useSessionTracker();
 
   const [randomNote, setRandomNote] = useState<INote>({
     frequency: 0,
     abcNote: "",
     note: "",
-    difficulty,
+    difficulty: metrics.difficulty,
   });
 
   useEffect(() => {
@@ -28,28 +31,30 @@ const NoteDisplay = ({ isStarted, setIsStarted }: Props) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (!playedNote || !randomNote) return;
+      setIsNoteCorrect(playedNote.note === randomNote.note);
+
       if (playedNote.note === randomNote.note) {
-        setIsNoteCorrect(true);
+        addSuccessfulNote();
       } else {
-        setIsNoteCorrect(false);
+        addMissedNote();
       }
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, [playedNote, randomNote]);
+  }, [playedNote.note, randomNote.note]);
 
   const notationRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const changeNote = () => {
-      const random = NoteUtils.getRandomNote(difficulty);
+      const random = NoteUtils.getRandomNote(randomNote, metrics.difficulty);
       abcjs.renderAbc(
         notationRef.current!,
         NoteUtils.generateAbcNotation(random),
         {
           responsive: "resize",
           staffwidth: 120,
+          selectionColor: "white",
         }
       );
 
@@ -62,30 +67,55 @@ const NoteDisplay = ({ isStarted, setIsStarted }: Props) => {
     }
 
     changeNote();
-    const intervalId = setInterval(changeNote, 4000);
+    const intervalId = setInterval(
+      changeNote,
+      metrics.difficulty === EDifficulty.easy ? 5000 : 4000
+    );
 
     return () => {
       clearInterval(intervalId);
     };
-  }, [isStarted, difficulty]);
+  }, [isStarted, metrics.difficulty]);
 
   const handleStop = () => {
     stopAudio();
+    endSession();
     setIsStarted(false);
   };
 
   return (
     <div className={classNames("flex flex-col items-center justify-center")}>
-      <div className="mb-14 lg:mb-5 absolute left-5 top-5">
-        <Button onClick={handleStop}>Stop practicing</Button>
+      <div className="flex items-center justify-between px-5 py-5 w-full">
+        <button
+          onClick={handleStop}
+          className="bg-mutedSecondary hover:bg-[#353535] p-1 lg:p-2 rounded-lg flex flex-row items-center justify-center space-x-1 text-primary"
+        >
+          <IconDoorOpen className="w-7 h-7 " />
+          <a className="hidden lg:block font-semibold">End Session</a>
+        </button>
+
+        <p className="text-xl font-bold text-gray-400">
+          Remaining time: {formatCountdown()}
+        </p>
+        <div className="w-8 lg:w-32" />
       </div>
-      <div className="space-y-5 py-5">
-        <div className="text-center bg-slate-800 py-2 rounded-lg px-3 lg:w-96">
+
+      <div className="px-5 w-full lg:w-72 pb-5">
+        <ListboxSelector
+          onChange={(value) => changeDifficulty(value)}
+          buttonTitle="Change Difficulty"
+          value={metrics.difficulty}
+          options={difficultyOptions}
+        />
+      </div>
+
+      <div className="space-y-5 py-5 w-full px-5 lg:w-96">
+        <div className="text-center bg-muted py-2 rounded-lg">
           <div className="flex flex-row items-center justify-center space-x-1 text-2xl">
             <h2 className="text-white font-semibold">Performed</h2>
-            <IconMusikNote className="w-6 h-6 text-yellow-500" />
+            <IconMusikNote className="w-6 h-6 text-primary" />
             <a className=" text-slate-600">•</a>
-            <h2 className="text-yellow-500 font-semibold">
+            <h2 className="text-primary font-semibold">
               {playedNote.note ? playedNote.note : "No note played"}
             </h2>
           </div>
@@ -93,24 +123,14 @@ const NoteDisplay = ({ isStarted, setIsStarted }: Props) => {
           <div className="flex flex-row items-center justify-center space-x-1 text-2xl">
             <h2 className="text-white font-semibold">Difficulty</h2>
             <a className=" text-slate-600">•</a>
-            <h2 className="text-yellow-500 font-semibold capitalize">
-              {difficulty}
+            <h2 className="text-primary font-semibold capitalize">
+              {metrics.difficulty}
             </h2>
           </div>
         </div>
-
-        <div className="space-y-2 flex items-center justify-center flex-col w-full">
-          <ListboxSelector
-            className="w-72"
-            onChange={(value) => setDifficulty(value)}
-            buttonTitle="Change Difficulty"
-            value={difficulty}
-            options={difficultyOptions}
-          />
-        </div>
       </div>
 
-      <div className="w-[375px] sm:w-[400px]">
+      <div className="w-[375px] sm:w-[400px] mt-10">
         <div
           ref={notationRef}
           className={isNoteCorrect ? "text-lime-500" : "text-white"}
