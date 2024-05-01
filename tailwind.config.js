@@ -8,6 +8,7 @@ export default {
         background: "#121212",
         primary: "#FACC15",
         muted: "#212121",
+        mutedSecondary: "#313131",
       },
     },
   },

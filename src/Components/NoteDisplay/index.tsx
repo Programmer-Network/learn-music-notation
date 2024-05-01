@@ -7,16 +7,16 @@ import NoteUtils, { notes } from "../../Utils/NoteUtils";
 import { EDifficulty, INote } from "../../types";
 import ListboxSelector from "../ListboxSelector";
 import { Props, difficultyOptions } from "./types";
-import Button from "../Button";
 import IconMusikNote from "../Icons/IconMusikNote";
 import useSessionTracker from "../../Hooks/useSessionTracker";
-import useSessionStore from "../../Stores/SessionStore";
+import IconDoorOpen from "../Icons/IconDoorOpen";
 
 const NoteDisplay = ({ isStarted, setIsStarted }: Props) => {
   const { playedNote, initAudio, stopAudio } = useAudioProcessor(notes);
   const [isNoteCorrect, setIsNoteCorrect] = useState<boolean>(false);
   const { addMissedNote, addSuccessfulNote } = useSessionTracker();
-  const { metrics, changeDifficulty } = useSessionStore();
+  const { metrics, changeDifficulty, formatCountdown, endSession } =
+    useSessionTracker();
 
   const [randomNote, setRandomNote] = useState<INote>({
     frequency: 0,
@@ -54,6 +54,7 @@ const NoteDisplay = ({ isStarted, setIsStarted }: Props) => {
         {
           responsive: "resize",
           staffwidth: 120,
+          selectionColor: "white",
         }
       );
 
@@ -78,16 +79,38 @@ const NoteDisplay = ({ isStarted, setIsStarted }: Props) => {
 
   const handleStop = () => {
     stopAudio();
+    endSession();
     setIsStarted(false);
   };
 
   return (
     <div className={classNames("flex flex-col items-center justify-center")}>
-      <div className="mb-14 lg:mb-5 absolute left-5 top-5">
-        <Button onClick={handleStop}>Stop practicing</Button>
+      <div className="flex items-center justify-between px-5 py-5 w-full">
+        <button
+          onClick={handleStop}
+          className="bg-mutedSecondary hover:bg-[#353535] p-1 lg:p-2 rounded-lg flex flex-row items-center justify-center space-x-1 text-primary"
+        >
+          <IconDoorOpen className="w-7 h-7 " />
+          <a className="hidden lg:block font-semibold">End Session</a>
+        </button>
+
+        <p className="text-xl font-bold text-gray-400">
+          Remaining time: {formatCountdown()}
+        </p>
+        <div className="w-8 lg:w-32" />
       </div>
-      <div className="space-y-5 py-5">
-        <div className="text-center bg-muted py-2 rounded-lg px-3 lg:w-96">
+
+      <div className="px-5 w-full lg:w-72 pb-5">
+        <ListboxSelector
+          onChange={(value) => changeDifficulty(value)}
+          buttonTitle="Change Difficulty"
+          value={metrics.difficulty}
+          options={difficultyOptions}
+        />
+      </div>
+
+      <div className="space-y-5 py-5 w-full px-5 lg:w-96">
+        <div className="text-center bg-muted py-2 rounded-lg">
           <div className="flex flex-row items-center justify-center space-x-1 text-2xl">
             <h2 className="text-white font-semibold">Performed</h2>
             <IconMusikNote className="w-6 h-6 text-primary" />
@@ -105,19 +128,9 @@ const NoteDisplay = ({ isStarted, setIsStarted }: Props) => {
             </h2>
           </div>
         </div>
-
-        <div className="space-y-2 flex items-center justify-center flex-col w-full">
-          <ListboxSelector
-            className="w-72"
-            onChange={(value) => changeDifficulty(value)}
-            buttonTitle="Change Difficulty"
-            value={metrics.difficulty}
-            options={difficultyOptions}
-          />
-        </div>
       </div>
 
-      <div className="w-[375px] sm:w-[400px]">
+      <div className="w-[375px] sm:w-[400px] mt-10">
         <div
           ref={notationRef}
           className={isNoteCorrect ? "text-lime-500" : "text-white"}

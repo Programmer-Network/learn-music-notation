@@ -35,7 +35,7 @@ function ListboxSelector({
                 key={index}
                 className={({ active }) =>
                   `relative cursor-pointer select-none py-2 pl-10 pr-4 ${
-                    active ? "bg-slate-700 text-white" : "text-white"
+                    active ? "bg-mutedSecondary text-white" : "text-white"
                   }`
                 }
                 value={option.value}
