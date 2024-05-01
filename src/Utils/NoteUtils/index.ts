@@ -204,14 +204,18 @@ export const notes: INote[] = [
 class NoteUtils {
   /**
    * Get a random note from the notes array filtered by difficulty.
+   * @param lastNote The last note played.
    * @param difficulty The difficulty level to filter by.
    * @returns INote
    */
-  public static getRandomNote(difficulty: string): INote {
+  public static getRandomNote(lastNote: INote, difficulty: EDifficulty): INote {
     const filteredNotes = notes.filter(
       (note) => note.difficulty === difficulty
     );
     const randomIndex = Math.floor(Math.random() * filteredNotes.length);
+    if (lastNote && filteredNotes[randomIndex].note === lastNote.note)
+      return this.getRandomNote(lastNote, difficulty);
+
     return filteredNotes[randomIndex];
   }
 

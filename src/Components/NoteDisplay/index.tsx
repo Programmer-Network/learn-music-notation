@@ -9,17 +9,20 @@ import ListboxSelector from "../ListboxSelector";
 import { Props, difficultyOptions } from "./types";
 import Button from "../Button";
 import IconMusikNote from "../Icons/IconMusikNote";
+import useSessionTracker from "../../Hooks/useSessionTracker";
+import useSessionStore from "../../Stores/SessionStore";
 
 const NoteDisplay = ({ isStarted, setIsStarted }: Props) => {
   const { playedNote, initAudio, stopAudio } = useAudioProcessor(notes);
-  const [difficulty, setDifficulty] = useState<EDifficulty>(EDifficulty.easy);
   const [isNoteCorrect, setIsNoteCorrect] = useState<boolean>(false);
+  const { addMissedNote, addSuccessfulNote } = useSessionTracker();
+  const { metrics, changeDifficulty } = useSessionStore();
 
   const [randomNote, setRandomNote] = useState<INote>({
     frequency: 0,
     abcNote: "",
     note: "",
-    difficulty,
+    difficulty: metrics.difficulty,
   });
 
   useEffect(() => {
@@ -28,22 +31,23 @@ const NoteDisplay = ({ isStarted, setIsStarted }: Props) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (!playedNote || !randomNote) return;
+      setIsNoteCorrect(playedNote.note === randomNote.note);
+
       if (playedNote.note === randomNote.note) {
-        setIsNoteCorrect(true);
+        addSuccessfulNote();
       } else {
-        setIsNoteCorrect(false);
+        addMissedNote();
       }
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, [playedNote, randomNote]);
+  }, [playedNote.note, randomNote.note]);
 
   const notationRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const changeNote = () => {
-      const random = NoteUtils.getRandomNote(difficulty);
+      const random = NoteUtils.getRandomNote(randomNote, metrics.difficulty);
       abcjs.renderAbc(
         notationRef.current!,
         NoteUtils.generateAbcNotation(random),
@@ -62,12 +66,15 @@ const NoteDisplay = ({ isStarted, setIsStarted }: Props) => {
     }
 
     changeNote();
-    const intervalId = setInterval(changeNote, 4000);
+    const intervalId = setInterval(
+      changeNote,
+      metrics.difficulty === EDifficulty.easy ? 5000 : 4000
+    );
 
     return () => {
       clearInterval(intervalId);
     };
-  }, [isStarted, difficulty]);
+  }, [isStarted, metrics.difficulty]);
 
   const handleStop = () => {
     stopAudio();
@@ -80,12 +87,12 @@ const NoteDisplay = ({ isStarted, setIsStarted }: Props) => {
         <Button onClick={handleStop}>Stop practicing</Button>
       </div>
       <div className="space-y-5 py-5">
-        <div className="text-center bg-slate-800 py-2 rounded-lg px-3 lg:w-96">
+        <div className="text-center bg-muted py-2 rounded-lg px-3 lg:w-96">
           <div className="flex flex-row items-center justify-center space-x-1 text-2xl">
             <h2 className="text-white font-semibold">Performed</h2>
-            <IconMusikNote className="w-6 h-6 text-yellow-500" />
+            <IconMusikNote className="w-6 h-6 text-primary" />
             <a className=" text-slate-600">•</a>
-            <h2 className="text-yellow-500 font-semibold">
+            <h2 className="text-primary font-semibold">
               {playedNote.note ? playedNote.note : "No note played"}
             </h2>
           </div>
@@ -93,8 +100,8 @@ const NoteDisplay = ({ isStarted, setIsStarted }: Props) => {
           <div className="flex flex-row items-center justify-center space-x-1 text-2xl">
             <h2 className="text-white font-semibold">Difficulty</h2>
             <a className=" text-slate-600">•</a>
-            <h2 className="text-yellow-500 font-semibold capitalize">
-              {difficulty}
+            <h2 className="text-primary font-semibold capitalize">
+              {metrics.difficulty}
             </h2>
           </div>
         </div>
@@ -102,9 +109,9 @@ const NoteDisplay = ({ isStarted, setIsStarted }: Props) => {
         <div className="space-y-2 flex items-center justify-center flex-col w-full">
           <ListboxSelector
             className="w-72"
-            onChange={(value) => setDifficulty(value)}
+            onChange={(value) => changeDifficulty(value)}
             buttonTitle="Change Difficulty"
-            value={difficulty}
+            value={metrics.difficulty}
             options={difficultyOptions}
           />
         </div>

@@ -7,10 +7,11 @@ import useSessionTracker from "./Hooks/useSessionTracker";
 
 function App() {
   const [isStarted, setIsStarted] = useState(false);
-  const { startSession, formatCountdown, isEnded } = useSessionTracker();
+  const { startSession, formatCountdown, isEnded, metrics } =
+    useSessionTracker();
 
   return (
-    <div className="dark:bg-primary min-h-screen">
+    <div className="dark:bg-background min-h-screen">
       <div className="flex flex-col items-center justify-center h-screen w-full">
         {!isStarted ? (
           <Modal
@@ -34,6 +35,7 @@ function App() {
             }
             successButton={
               <Button
+                bgFill
                 onClick={() => {
                   setIsStarted(true);
                   startSession();
@@ -43,10 +45,28 @@ function App() {
               </Button>
             }
           />
+        ) : !isEnded ? (
+          <>
+            <p className="text-3xl font-bold text-gray-300">
+              Remaining time: {formatCountdown()}
+            </p>
+            <NoteDisplay isStarted={isStarted} setIsStarted={setIsStarted} />
+          </>
         ) : (
           <>
-            <NoteDisplay isStarted={isStarted} setIsStarted={setIsStarted} />
-            <a> {isEnded ? "Beendet" : formatCountdown()}</a>
+            <a className="text-white">Results of the session:</a>
+            <a className="text-white">Missed Notes: {metrics.missedNotes}</a>
+            <a className="text-white">
+              Successful Notes: {metrics.successfulNotes}
+            </a>
+            <Button
+              onClick={() => {
+                setIsStarted(true);
+                startSession();
+              }}
+            >
+              Restart Session
+            </Button>
           </>
         )}
       </div>

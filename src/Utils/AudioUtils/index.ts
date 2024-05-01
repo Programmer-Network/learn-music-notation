@@ -1,3 +1,4 @@
+import useSessionStore from "../../Stores/SessionStore";
 import { EDifficulty, INote } from "../../types";
 
 export class AudioUtils {

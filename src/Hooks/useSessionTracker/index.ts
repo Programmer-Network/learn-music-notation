@@ -1,6 +1,9 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import useSessionStore from "../../Stores/SessionStore";
+import { EDifficulty } from "../../types";
 
 interface SessionMetrics {
+  difficulty: EDifficulty;
   successfulNotes: number;
   missedNotes: number;
 }
@@ -14,41 +17,21 @@ const useSessionTracker = (): {
   addSuccessfulNote: () => void;
   addMissedNote: () => void;
   countdownTime: number;
+  changeDifficulty: (newDifficulty: EDifficulty) => void;
   formatCountdown: () => string;
 } => {
-  const [isStarted, setIsStarted] = useState(false);
-  const [isEnded, setIsEnded] = useState(false);
-  const [startTime, setStartTime] = useState<number | null>(null);
-  const [endTime, setEndTime] = useState<number | null>(null);
-  const [metrics, setMetrics] = useState<SessionMetrics>({
-    successfulNotes: 0,
-    missedNotes: 0,
-  });
-  const [countdownTime, setCountdownTime] = useState<number>(120);
-
-  const startSession = (): void => {
-    setIsStarted(true);
-    setStartTime(Date.now());
-    setIsEnded(false);
-    setCountdownTime(120);
-  };
-
-  const endSession = (): void => {
-    setIsStarted(false);
-    setEndTime(Date.now());
-    setIsEnded(true);
-  };
-
-  const addSuccessfulNote = (): void => {
-    setMetrics((prev) => ({
-      ...prev,
-      successfulNotes: prev.successfulNotes + 1,
-    }));
-  };
-
-  const addMissedNote = (): void => {
-    setMetrics((prev) => ({ ...prev, missedNotes: prev.missedNotes + 1 }));
-  };
+  const {
+    countdownTime,
+    endSession,
+    isEnded,
+    isStarted,
+    metrics,
+    startSession,
+    addMissedNote,
+    setCountdownTime,
+    changeDifficulty,
+    addSuccessfulNote,
+  } = useSessionStore();
 
   const formatCountdown = (): string => {
     const minutes = Math.floor(countdownTime / 60);
@@ -57,19 +40,20 @@ const useSessionTracker = (): {
   };
 
   useEffect(() => {
-    if (isStarted && !isEnded && countdownTime >= 0) {
+    if (isStarted && !isEnded) {
       const countdownTimer = setInterval(() => {
-        setCountdownTime((prevTime) => {
-          if (prevTime === 0) {
-            setIsEnded(true);
-            return 0;
-          }
-          return prevTime - 1;
-        });
+        setCountdownTime(countdownTime - 1);
+        if (countdownTime <= 0) {
+          endSession();
+        }
       }, 1000);
-      return (): void => clearInterval(countdownTimer);
+      return () => {
+        if (countdownTimer) {
+          clearInterval(countdownTimer);
+        }
+      };
     }
-  }, [isStarted, isEnded, countdownTime]);
+  }, [isStarted, isEnded, countdownTime, endSession, setCountdownTime]);
 
   return {
     isStarted,
@@ -79,6 +63,7 @@ const useSessionTracker = (): {
     metrics,
     addSuccessfulNote,
     addMissedNote,
+    changeDifficulty,
     countdownTime,
     formatCountdown,
   };
