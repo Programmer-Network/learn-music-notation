@@ -5,10 +5,10 @@ import { useAudioProcessor } from "../../Hooks/useAudioProcessor";
 import NoteUtils, { notes } from "../../Utils/NoteUtils";
 
 import { EDifficulty, INote } from "../../types";
-import ListboxSelector from "../ListboxSelector";
-import { Props, difficultyOptions } from "./types";
 import Button from "../Button";
 import IconMusikNote from "../Icons/IconMusikNote";
+import ListboxSelector from "../ListboxSelector";
+import { Props, difficultyOptions } from "./types";
 
 const NoteDisplay = ({ isStarted, setIsStarted }: Props) => {
   const { playedNote, initAudio, stopAudio } = useAudioProcessor(notes);
@@ -103,7 +103,6 @@ const NoteDisplay = ({ isStarted, setIsStarted }: Props) => {
           <ListboxSelector
             className="w-72"
             onChange={(value) => setDifficulty(value)}
-            buttonTitle="Change Difficulty"
             value={difficulty}
             options={difficultyOptions}
           />
